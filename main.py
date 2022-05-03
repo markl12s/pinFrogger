@@ -5,7 +5,7 @@ post on /r/badUIbattles when done
 
 last update: 4/30/2022
 
-current task: debugging
+current task: refactor
 
 next task: create drawing background, use turtles to draw and fill in the different sections
 ------------------------------------------------------------------------------------------------------------------
@@ -68,7 +68,6 @@ misc functions
 """
 
 def movement(direction, speed, actor):
-    speed = speed
     x, y = actor.position()
 
     moveDirection = {
