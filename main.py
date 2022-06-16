@@ -7,6 +7,8 @@ last update: 6/13/2022
 current task: refactoring
 
 next task: create drawing background, use turtles to draw and fill in the different sections
+
+known bugs: the frog by default changes color to black, and I can't change it's size
 ------------------------------------------------------------------------------------------------------------------
 """
 import math
@@ -32,8 +34,9 @@ player
 """
 
 class Player:
-    playerSize = 1.5
-    playerSpeed = 30 * playerSize
+    rowSize = 100 / 12
+    playerSize = rowSize - 5
+    playerSpeed = rowSize
 
     # constructor
     def __init__(self, name='player', size=playerSize):
@@ -104,7 +107,7 @@ class Development_tools:
         if startY == player.turtle.ycor():
             print('vertical test passed')
 
-    # used to show the grid, allowing for checking if movement is moving among the grid
+    # used to show the grid, allowing for checking if movement is moving evenly
     def show_grid():
         gridDrawer = turtle.Turtle()
         gridDrawer.color('white')
@@ -130,6 +133,8 @@ class Development_tools:
             gridDrawer.pendown()
             gridDrawer.goto(100, starts[y])
 
+        gridDrawer.hideturtle()
+
 
 """
 ------------------------------------------------------------------------------------------------------------------
@@ -148,11 +153,19 @@ execution
 """
 
 isTesting = True
+
+player.turtle.goto(50, 50)
+
+# figure out why I have to set the color again, should already be light green
+player.turtle.color('light green')
+# also figure out why it by default shrinks the turtle
+playerSize = (100 / 12) - 7
+player.turtle.shapesize(playerSize, playerSize)
+
 if isTesting:
     Development_tools.show_grid()
     Development_tools.test_player_movement()
 
-player.turtle.goto(50, 50)
 
 while not playerDead:
     turtle.update()
