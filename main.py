@@ -23,6 +23,7 @@ setup
 """
 
 window = turtle.Screen()
+window.setworldcoordinates(0, 0, 100, 100)
 window.bgcolor('black')
 
 playerLives = 3
@@ -36,7 +37,7 @@ player
 
 class Player:
     rowSize = 100 / 12
-    playerSize = rowSize - 5
+    playerSize = rowSize - 6
     playerSpeed = rowSize
 
     # constructor
@@ -144,7 +145,6 @@ set up game
 """
 
 player = Player('player')
-window.setworldcoordinates(0, 0, 100, 100)
 
 
 """
@@ -156,14 +156,6 @@ execution
 isTesting = True
 
 player.turtle.goto(50, 50)
-
-# figure out why I have to set the color again, should already be light green
-player.turtle.color('light green')
-# also figure out why it by default shrinks the turtle
-playerSize = (100 / 12) - 7
-player.turtle.shapesize(playerSize, playerSize)
-# same issue
-player.turtle.penup()
 
 if isTesting:
     Development_tools.show_grid()
