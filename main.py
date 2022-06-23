@@ -3,17 +3,18 @@
 pinFrogger: frogger but the goal is to enter the computers pin, numbers 0-9 are the spots on top of the screen
 post on /r/badUIbattles when done
 last update: 6/13/2022
-
-current task: refactoring
+current task: refactoring, stuck on a bug
 
 next task: create drawing background, use turtles to draw and fill in the different sections
 
-known bugs: the frog by default changes color to black, and I can't change it's size
+known bugs: the frog by default changes color to black, and it's size also goes to default, and the pen goes down
+I can change it after using the constructor, but I don't want to have to modify it after the constructor is called
 ------------------------------------------------------------------------------------------------------------------
 """
-import math
+
 import turtle
 import time
+
 
 """
 ------------------------------------------------------------------------------------------------------------------
@@ -24,7 +25,7 @@ setup
 window = turtle.Screen()
 window.bgcolor('black')
 
-playerDead = False
+playerLives = 3
 
 
 """
@@ -142,7 +143,7 @@ set up game
 ------------------------------------------------------------------------------------------------------------------
 """
 
-player = Player('frog')
+player = Player('player')
 window.setworldcoordinates(0, 0, 100, 100)
 
 
@@ -161,12 +162,13 @@ player.turtle.color('light green')
 # also figure out why it by default shrinks the turtle
 playerSize = (100 / 12) - 7
 player.turtle.shapesize(playerSize, playerSize)
+# same issue
+player.turtle.penup()
 
 if isTesting:
     Development_tools.show_grid()
     Development_tools.test_player_movement()
 
-
-while not playerDead:
+while playerLives > 0:
     turtle.update()
 
