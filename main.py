@@ -2,13 +2,14 @@
 ------------------------------------------------------------------------------------------------------------------
 pinFrogger: frogger but the goal is to enter the computers pin, numbers 0-9 are the spots on top of the screen
 post on /r/badUIbattles when done
-last update: 6/13/2022
-current task: refactoring, stuck on a bug
+last update: 6/23/2022
+current task: refactoring
 
-next task: create drawing background, use turtles to draw and fill in the different sections
+next task: fix the button queue feature
 
-known bugs: the frog by default changes color to black, and it's size also goes to default, and the pen goes down
-I can change it after using the constructor, but I don't want to have to modify it after the constructor is called
+know bugs:
+
+note: in the future, make sure the window fully initializes before calling any constructors
 ------------------------------------------------------------------------------------------------------------------
 """
 
@@ -39,6 +40,8 @@ class Player:
     rowSize = 100 / 12
     playerSize = rowSize - 6
     playerSpeed = rowSize
+    keyPressed = 0
+    buttonQueue = []
 
     # constructor
     def __init__(self, name='player', size=playerSize):
@@ -48,18 +51,57 @@ class Player:
         self.turtle.shapesize(size, size)
         self.turtle.penup()
 
+    # controls
+    def playerControls(self):
+        turtle.listen()
+
+        window.onkeypress(player.move_up, 'Up')
+        window.onkeypress(player.move_down, 'Down')
+        window.onkeypress(player.move_left, 'Left')
+        window.onkeypress(player.move_right, 'Right')
+
+        window.onkeyrelease(player.key_flop, 'Up')
+        window.onkeyrelease(player.key_flop, 'Down')
+        window.onkeyrelease(player.key_flop, 'Left')
+        window.onkeyrelease(player.key_flop, 'Right')
+
+    def key_flop(self):
+        player.keyPressed -= 1
+        player.keyPressed = abs(player.keyPressed)
+
     # movement
     def move_left(self, speed=playerSpeed):
-        movement('left', speed, player.turtle)
+        if player.keyPressed == 0:
+            movement('left', speed, player.turtle)
+            player.key_flop()
+        else:
+            player.buttonQueue.append('left')
 
     def move_right(self, speed=playerSpeed):
-        movement('right', speed, player.turtle)
+        if player.keyPressed == 0:
+            movement('right', speed, player.turtle)
+            player.key_flop()
+        else:
+            player.buttonQueue.append('right')
 
     def move_up(self, speed=playerSpeed):
-        movement('up', speed, player.turtle)
+        if player.keyPressed == 0:
+            movement('up', speed, player.turtle)
+            player.key_flop()
+        else:
+            player.buttonQueue.append('up')
 
     def move_down(self, speed=playerSpeed):
-        movement('down', speed, player.turtle)
+        if player.keyPressed == 0:
+            movement('down', speed, player.turtle)
+            player.key_flop()
+        else:
+            player.buttonQueue.append('down')
+
+    def run_button_queue(self):
+        for i in range(len(player.buttonQueue)):
+            movement(player.buttonQueue[i], player.playerSpeed, player.turtle)
+        player.buttonQueue = []
 
 
 """
@@ -95,16 +137,20 @@ class Development_tools:
         startX, startY = player.turtle.position()
 
         player.move_left()
+        player.key_flop()
         time.sleep(sleepTime)
         player.move_right()
+        player.key_flop()
         time.sleep(sleepTime)
 
         if startX == player.turtle.xcor():
             print('horizontal test passed')
 
         player.move_up()
+        player.key_flop()
         time.sleep(sleepTime)
         player.move_down()
+        player.key_flop()
 
         if startY == player.turtle.ycor():
             print('vertical test passed')
@@ -145,7 +191,7 @@ set up game
 """
 
 player = Player('player')
-
+player.turtle.goto(50, 50)
 
 """
 ------------------------------------------------------------------------------------------------------------------
@@ -154,13 +200,12 @@ execution
 """
 
 isTesting = True
-
-player.turtle.goto(50, 50)
-
 if isTesting:
     Development_tools.show_grid()
-    Development_tools.test_player_movement()
+    # Development_tools.test_player_movement()
 
 while playerLives > 0:
+    player.playerControls()
+    player.run_button_queue()
     turtle.update()
 
