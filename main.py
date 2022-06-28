@@ -2,10 +2,10 @@
 ------------------------------------------------------------------------------------------------------------------
 pinFrogger: frogger but the goal is to enter the computers pin, numbers 0-9 are the spots on top of the screen
 post on /r/badUIbattles when done
-last update: 6/23/2022
-current task: refactoring
+last update: 6/28/2022
+current task: refactor
 
-next task: fix the button queue feature
+next task: create background drawing
 
 know bugs:
 
@@ -40,8 +40,10 @@ class Player:
     rowSize = 100 / 12
     playerSize = rowSize - 6
     playerSpeed = rowSize
+
     keyPressed = 0
     buttonQueue = []
+    lastButton = ''
 
     # constructor
     def __init__(self, name='player', size=playerSize):
@@ -70,38 +72,30 @@ class Player:
         player.keyPressed = abs(player.keyPressed)
 
     # movement
-    def move_left(self, speed=playerSpeed):
+    def player_movement(self, direction, speed=playerSpeed):
         if player.keyPressed == 0:
-            movement('left', speed, player.turtle)
+            movement(direction, speed, player.turtle)
+            player.lastButton = direction
             player.key_flop()
-        else:
-            player.buttonQueue.append('left')
-
-    def move_right(self, speed=playerSpeed):
-        if player.keyPressed == 0:
-            movement('right', speed, player.turtle)
-            player.key_flop()
-        else:
-            player.buttonQueue.append('right')
-
-    def move_up(self, speed=playerSpeed):
-        if player.keyPressed == 0:
-            movement('up', speed, player.turtle)
-            player.key_flop()
-        else:
-            player.buttonQueue.append('up')
-
-    def move_down(self, speed=playerSpeed):
-        if player.keyPressed == 0:
-            movement('down', speed, player.turtle)
-            player.key_flop()
-        else:
-            player.buttonQueue.append('down')
+        elif player.lastButton != direction:
+            player.buttonQueue.append(direction)
 
     def run_button_queue(self):
         for i in range(len(player.buttonQueue)):
             movement(player.buttonQueue[i], player.playerSpeed, player.turtle)
         player.buttonQueue = []
+
+    def move_left(self):
+        player.player_movement('left')
+
+    def move_right(self):
+        player.player_movement('right')
+
+    def move_up(self):
+        player.player_movement('up')
+
+    def move_down(self):
+        player.player_movement('down')
 
 
 """
@@ -199,10 +193,9 @@ execution
 ------------------------------------------------------------------------------------------------------------------
 """
 
-isTesting = True
+isTesting = False
 if isTesting:
     Development_tools.show_grid()
-    # Development_tools.test_player_movement()
 
 while playerLives > 0:
     player.playerControls()
