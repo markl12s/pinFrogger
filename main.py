@@ -5,11 +5,12 @@ post on /r/badUIbattles when done
 last update: 6/28/2022
 current task: refactor
 
-next task: create background drawing
+next task: create cars
 
-know bugs:
+known bugs:
 
 note: in the future, make sure the window fully initializes before calling any constructors
+this caused a significant bug in development, avoid this bug in the future
 ------------------------------------------------------------------------------------------------------------------
 """
 
@@ -25,9 +26,61 @@ setup
 
 window = turtle.Screen()
 window.setworldcoordinates(0, 0, 100, 100)
-window.bgcolor('black')
+window.bgcolor('dark blue')
 
 playerLives = 3
+
+
+"""
+------------------------------------------------------------------------------------------------------------------
+drawing objects
+------------------------------------------------------------------------------------------------------------------
+"""
+
+class Drawing:
+    numRows = 15
+    numColumns = 10
+    rowSize = 100 / numRows
+    colSize = 100 / numColumns
+
+    targetSize = 2
+
+    grassGreen = [0, 154, 23]
+
+    def draw_board():
+        # grass around road
+        Drawing.draw_rect([-10, -10], [100, Drawing.rowSize], Drawing.grassGreen)
+        Drawing.draw_rect([-10, Drawing.rowSize * 5], [100, Drawing.rowSize * 6], Drawing.grassGreen)
+
+        # road
+        Drawing.draw_rect([-10, Drawing.rowSize] , [100, Drawing.rowSize * 5], [0, 0, 0])
+
+        # finishing grass
+        Drawing.draw_rect([-10, Drawing.rowSize * 12.5], [100, Drawing.rowSize * 13], Drawing.grassGreen)
+
+        # objective spaces
+        add = 0
+        for i in range(Drawing.numColumns):
+            Drawing.draw_rect([add - Drawing.targetSize, Drawing.rowSize * 12], [add + Drawing.targetSize, Drawing.rowSize * 12.5], Drawing.grassGreen)
+            add += Drawing.colSize
+
+    def draw_rect(bottomLeft, topRight, colorRGB):
+        pen = turtle.Turtle()
+        turtle.colormode(255)
+        pen.color(colorRGB)
+
+        pen.penup()
+        pen.speed(0)
+        pen.goto(bottomLeft)
+        pen.pendown()
+
+        pen.begin_fill()
+        pen.goto(topRight[0], bottomLeft[1])
+        pen.goto(topRight)
+        pen.goto(bottomLeft[0], topRight[1])
+        pen.goto(bottomLeft)
+        pen.end_fill()
+        pen.hideturtle()
 
 
 """
@@ -37,7 +90,7 @@ player
 """
 
 class Player:
-    rowSize = 100 / 12
+    rowSize = Drawing.rowSize
     playerSize = rowSize - 6
     playerSpeed = rowSize
 
@@ -155,21 +208,21 @@ class Development_tools:
         gridDrawer.color('white')
         gridDrawer.speed(0)
 
-        interval = 100 / 12
+        interval = Drawing.rowSize
         starts = []
         add = 0
 
-        for i in range(12):
+        for i in range(Drawing.numRows):
             starts.append(add)
             add += interval
 
-        for x in range(12):
+        for x in range(Drawing.numRows):
             gridDrawer.penup()
             gridDrawer.goto(starts[x], 0)
             gridDrawer.pendown()
             gridDrawer.goto(starts[x], 100)
 
-        for y in range(12):
+        for y in range(Drawing.numRows):
             gridDrawer.penup()
             gridDrawer.goto(0, starts[y])
             gridDrawer.pendown()
@@ -185,7 +238,11 @@ set up game
 """
 
 player = Player('player')
-player.turtle.goto(50, 50)
+centerSquare = Drawing.rowSize / 2
+player.turtle.goto(50, centerSquare)
+
+Drawing.draw_board()
+
 
 """
 ------------------------------------------------------------------------------------------------------------------
