@@ -3,9 +3,9 @@
 pinFrogger: frogger but the goal is to enter the computers pin, numbers 0-9 are the spots on top of the screen
 post on /r/badUIbattles when done
 last update: 6/28/2022
-current task: refactor
+current task: make water kill the player
 
-next task: create cars
+next task: debug
 
 known bugs:
 
@@ -28,8 +28,6 @@ window = turtle.Screen()
 window.setworldcoordinates(0, 0, 100, 100)
 window.bgcolor('dark blue')
 
-playerLives = 3
-
 
 """
 ------------------------------------------------------------------------------------------------------------------
@@ -40,8 +38,8 @@ drawing objects
 class Drawing:
     numRows = 15
     numColumns = 10
-    rowSize = 100 / numRows
-    colSize = 100 / numColumns
+    lengthScreen = 100
+    rowSize, colSize = lengthScreen / numRows, lengthScreen / numColumns
 
     targetSize = 2
 
@@ -61,19 +59,24 @@ class Drawing:
         # objective spaces
         add = 0
         for i in range(Drawing.numColumns):
-            Drawing.draw_rect([add - Drawing.targetSize, Drawing.rowSize * 12], [add + Drawing.targetSize, Drawing.rowSize * 12.5], Drawing.grassGreen)
+            Drawing.draw_rect([add - Drawing.targetSize, Drawing.rowSize * 12],
+                              [add + Drawing.targetSize, Drawing.rowSize * 12.5], Drawing.grassGreen)
+
             add += Drawing.colSize
 
     def draw_rect(bottomLeft, topRight, colorRGB):
+        # setup pen
         pen = turtle.Turtle()
         turtle.colormode(255)
         pen.color(colorRGB)
 
+        # setup positioning
         pen.penup()
         pen.speed(0)
         pen.goto(bottomLeft)
         pen.pendown()
 
+        # draw rectangle
         pen.begin_fill()
         pen.goto(topRight[0], bottomLeft[1])
         pen.goto(topRight)
@@ -93,6 +96,8 @@ class Player:
     rowSize = Drawing.rowSize
     playerSize = rowSize - 6
     playerSpeed = rowSize
+
+    playerLives = 3
 
     keyPressed = 0
     buttonQueue = []
@@ -149,6 +154,22 @@ class Player:
 
     def move_down(self):
         player.player_movement('down')
+
+    # player behaviors
+    def hit_water(self):
+        playerX, playerY = player.turtle.position()
+
+        if playerY > 83:
+            return
+        else:
+            if playerY > 37:
+                player.die()
+
+    def die(self):
+        player.turtle.hideturtle()
+        player.playerLives -= 1
+        player.turtle.goto(50, centerSquare)
+        player.turtle.showturtle()
 
 
 """
@@ -252,10 +273,16 @@ execution
 
 isTesting = False
 if isTesting:
-    Development_tools.show_grid()
+    i = 0
 
-while playerLives > 0:
+while player.playerLives > 0:
     player.playerControls()
     player.run_button_queue()
+    player.hit_water()
     turtle.update()
+
+    if isTesting:
+        i += 1
+        if i == 500:
+            i = 0
 
