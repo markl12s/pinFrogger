@@ -3,9 +3,9 @@
 pinFrogger: frogger but the goal is to enter the computers pin, numbers 0-9 are the spots on top of the screen
 post on /r/badUIbattles when done
 last update: 6/28/2022
-current task: make water kill the player
+current task: refactor
 
-next task: debug
+next task: create logs
 
 known bugs:
 
@@ -42,6 +42,8 @@ class Drawing:
     rowSize, colSize = lengthScreen / numRows, lengthScreen / numColumns
 
     targetSize = 2
+    targetY = 83
+    waterBeginY = 37
 
     grassGreen = [0, 154, 23]
 
@@ -159,10 +161,10 @@ class Player:
     def hit_water(self):
         playerX, playerY = player.turtle.position()
 
-        if playerY > 83:
-            return
+        if playerY > Drawing.targetY:
+            pass
         else:
-            if playerY > 37:
+            if playerY > Drawing.waterBeginY:
                 player.die()
 
     def die(self):
